@@ -1,7 +1,7 @@
 package com.decoupigny.easywork.services;
 
 
-import com.decoupigny.easywork.models.User;
+import com.decoupigny.easywork.models.user.User;
 import com.decoupigny.easywork.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;

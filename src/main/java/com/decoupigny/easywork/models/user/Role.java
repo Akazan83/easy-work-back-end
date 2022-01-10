@@ -1,4 +1,4 @@
-package com.decoupigny.easywork.models;
+package com.decoupigny.easywork.models.user;
 
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;

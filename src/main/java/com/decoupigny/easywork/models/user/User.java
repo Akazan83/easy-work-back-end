@@ -1,4 +1,4 @@
-package com.decoupigny.easywork.models;
+package com.decoupigny.easywork.models.user;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -37,6 +37,12 @@ public class User {
     private Set<Role> roles = new HashSet<>();
 
     public User() {
+    }
+
+    public User(String id,String firstName, String lastName) {
+        this.id = id;
+        this.firstName = firstName;
+        this.lastName = lastName;
     }
 
     public User(String firstName,String lastName, String email, String password) {
