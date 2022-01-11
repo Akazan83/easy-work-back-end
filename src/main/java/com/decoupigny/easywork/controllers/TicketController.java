@@ -60,7 +60,6 @@ public class TicketController {
     @PutMapping("/tickets/{id}")
     public ResponseEntity<Ticket> updateTicket(@PathVariable("id") String id, @RequestBody Ticket ticket) {
         Optional<Ticket> ticketData = ticketRepository.findById(id);
-
         if (ticketData.isPresent()) {
             Ticket _ticket = ticketData.get();
             _ticket.setTitle(ticket.getTitle());

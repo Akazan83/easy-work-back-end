@@ -7,8 +7,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 public class Ticket {
     @Id
     private String id;
-
-    private int owner;
+    private String owner;
     private String title;
     private String status;
     private String reference;
@@ -22,7 +21,7 @@ public class Ticket {
 
     }
 
-    public Ticket(int owner, String title, String status, String reference, String creationDate, String endDate, String description, Participant[] participants, Commentary[] commentaries) {
+    public Ticket(String owner, String title, String status, String reference, String creationDate, String endDate, String description, Participant[] participants, Commentary[] commentaries) {
         this.title = title;
         this.owner = owner;
         this.status = status;
@@ -34,7 +33,7 @@ public class Ticket {
         this.commentaries = commentaries;
     }
 
-    public Ticket(String id, int owner, String title, String status, String reference, String creationDate, String endDate, String description, Participant[] participants, Commentary[] commentaries) {
+    public Ticket(String id, String owner, String title, String status, String reference, String creationDate, String endDate, String description, Participant[] participants, Commentary[] commentaries) {
         this.id = id;
         this.title = title;
         this.owner = owner;
@@ -55,11 +54,11 @@ public class Ticket {
         this.id = id;
     }
 
-    public int getOwner() {
+    public String getOwner() {
         return owner;
     }
 
-    public void setOwner(int owner) {
+    public void setOwner(String owner) {
         this.owner = owner;
     }
 
