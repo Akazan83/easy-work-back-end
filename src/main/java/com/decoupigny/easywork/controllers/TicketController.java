@@ -1,17 +1,22 @@
 package com.decoupigny.easywork.controllers;
 
 import com.decoupigny.easywork.models.ticket.Ticket;
+import com.decoupigny.easywork.models.ticket.TicketStateEnum;
 import com.decoupigny.easywork.repository.TicketRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
-@CrossOrigin(origins = "http://localhost:4200")
+import static java.lang.System.in;
+
+@CrossOrigin(origins = "*", maxAge = 3600)
 @RestController
 @RequestMapping("/api/v1")
 public class TicketController {
@@ -60,13 +65,14 @@ public class TicketController {
     @PutMapping("/tickets/{id}")
     public ResponseEntity<Ticket> updateTicket(@PathVariable("id") String id, @RequestBody Ticket ticket) {
         Optional<Ticket> ticketData = ticketRepository.findById(id);
+
         if (ticketData.isPresent()) {
             Ticket _ticket = ticketData.get();
             _ticket.setTitle(ticket.getTitle());
             _ticket.setDescription(ticket.getDescription());
             _ticket.setCreationDate(ticket.getCreationDate());
             _ticket.setOwner(ticket.getOwner());
-            _ticket.setStatus(ticket.getStatus());
+            _ticket.setStatus(checkStatus(ticket));
             _ticket.setReference(ticket.getReference());
             _ticket.setEndDate(ticket.getEndDate());
             _ticket.setParticipants(ticket.getParticipants());
@@ -97,11 +103,11 @@ public class TicketController {
         }
     }
 
-    @GetMapping("/tickets/status")
-    public ResponseEntity<List<Ticket>> findByStatus() {
+    @GetMapping("/tickets/filtered/{status}/{page}")
+    public ResponseEntity<List<Ticket>> findByStatus(@PathVariable String status, @PathVariable int page) {
         try {
-            List<Ticket> tickets = ticketRepository.findByStatus(true);
-
+            List<Ticket> tickets;
+            tickets = ticketRepository.findByStatus(status, PageRequest.of(page,9));
             if (tickets.isEmpty()) {
                 return new ResponseEntity<>(HttpStatus.NO_CONTENT);
             }
@@ -109,5 +115,16 @@ public class TicketController {
         } catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
+    }
+
+    private String checkStatus(Ticket ticket){
+        int participantNumber = ticket.getParticipants().length;
+        final int approvedNumber = (int) Arrays.stream(ticket.getParticipants()).filter(participant -> participant.getStatus().equals("Validé") ).count();
+        final int refusedNumber = (int) Arrays.stream(ticket.getParticipants()).filter(participant -> participant.getStatus().equals("Refusé") ).count();
+
+        if(participantNumber == approvedNumber) return "Validé";
+        if(participantNumber == refusedNumber) return "Refusé";
+
+        return "En attente";
     }
 }

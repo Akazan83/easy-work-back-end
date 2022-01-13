@@ -1,13 +1,13 @@
 package com.decoupigny.easywork.models.ticket;
 
 public class Commentary {
-    private int userId;
+    private String userId;
     private String firstName;
     private String lastName;
     private String text;
     private String  sendingDate;
 
-    public Commentary(int userId, String firstName, String lastName, String text, String sendingDate) {
+    public Commentary(String userId, String firstName, String lastName, String text, String sendingDate) {
         this.userId = userId;
         this.firstName = firstName;
         this.lastName = lastName;
@@ -15,11 +15,11 @@ public class Commentary {
         this.sendingDate = sendingDate;
     }
 
-    public int getUserId() {
+    public String getUserId() {
         return userId;
     }
 
-    public void setUserId(int userId) {
+    public void setUserId(String userId) {
         this.userId = userId;
     }
 
