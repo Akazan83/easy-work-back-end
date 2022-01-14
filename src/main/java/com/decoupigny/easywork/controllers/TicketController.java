@@ -83,7 +83,7 @@ public class TicketController {
         }
     }
 
-    @DeleteMapping("/tickets/{id}")
+    @DeleteMapping("/ticket/{id}")
     public ResponseEntity<HttpStatus> deleteTicket(@PathVariable("id") String id) {
         try {
             ticketRepository.deleteById(id);
@@ -119,6 +119,8 @@ public class TicketController {
 
     private String checkStatus(Ticket ticket){
         int participantNumber = ticket.getParticipants().length;
+        if(participantNumber == 0) return "En attente";
+
         final int approvedNumber = (int) Arrays.stream(ticket.getParticipants()).filter(participant -> participant.getStatus().equals("Validé") ).count();
         final int refusedNumber = (int) Arrays.stream(ticket.getParticipants()).filter(participant -> participant.getStatus().equals("Refusé") ).count();
 
