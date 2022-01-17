@@ -1,6 +1,5 @@
 package com.decoupigny.easywork.services;
 
-
 import com.decoupigny.easywork.models.messenger.ChatRoom;
 import com.decoupigny.easywork.repository.ChatRoomRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,23 +8,21 @@ import org.springframework.stereotype.Service;
 import java.util.Optional;
 
 @Service
-public class MessengerRoomService {
+public class ChatRoomService {
 
-    @Autowired
-    private ChatRoomRepository chatRoomRepository;
+    @Autowired private ChatRoomRepository chatRoomRepository;
 
     public Optional<String> getChatId(
             String senderId, String recipientId, boolean createIfNotExist) {
 
-        // TODO: Refactoring
-        return chatRoomRepository
+         return chatRoomRepository
                 .findBySenderIdAndRecipientId(senderId, recipientId)
                 .map(ChatRoom::getChatId);
-               /* .or(() -> {
+                 /*.or(() -> {
                     if(!createIfNotExist) {
                         return  Optional.empty();
                     }
-                    String chatId =
+                     var chatId =
                             String.format("%s_%s", senderId, recipientId);
 
                     ChatRoom senderRecipient = ChatRoom

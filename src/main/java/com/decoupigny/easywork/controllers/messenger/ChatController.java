@@ -1,11 +1,8 @@
 package com.decoupigny.easywork.controllers.messenger;
-
-
-import com.decoupigny.easywork.models.messenger.Message;
-import com.decoupigny.easywork.models.messenger.MessengerNotification;
-import com.decoupigny.easywork.services.MessengerRoomService;
-import com.decoupigny.easywork.services.MessengerService;
-import lombok.var;
+import com.decoupigny.easywork.models.messenger.ChatMessage;
+import com.decoupigny.easywork.models.messenger.ChatNotification;
+import com.decoupigny.easywork.services.ChatMessageService;
+import com.decoupigny.easywork.services.ChatRoomService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.handler.annotation.MessageMapping;
@@ -18,22 +15,23 @@ import org.springframework.web.bind.annotation.PathVariable;
 import java.util.Optional;
 
 @Controller
-public class MessengerController {
+public class ChatController {
 
     @Autowired private SimpMessagingTemplate messagingTemplate;
-    @Autowired private MessengerService chatMessageService;
-    @Autowired private MessengerRoomService chatRoomService;
+    @Autowired private ChatMessageService chatMessageService;
+    @Autowired private ChatRoomService chatRoomService;
 
     @MessageMapping("/chat")
-    public void processMessage(@Payload Message chatMessage) {
+    public void processMessage(@Payload ChatMessage chatMessage) {
         Optional<String> chatId = chatRoomService
                 .getChatId(chatMessage.getSenderId(), chatMessage.getRecipientId(), true);
         chatMessage.setChatId(chatId.get());
 
-        Message saved = chatMessageService.save(chatMessage);
+        ChatMessage saved = chatMessageService.save(chatMessage);
+        System.out.println("Process");
         messagingTemplate.convertAndSendToUser(
                 chatMessage.getRecipientId(),"/queue/messages",
-                new MessengerNotification(
+                new ChatNotification(
                         saved.getId(),
                         saved.getSenderId(),
                         saved.getSenderName()));

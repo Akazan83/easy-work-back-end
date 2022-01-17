@@ -1,9 +1,9 @@
 package com.decoupigny.easywork.services;
 
 import com.decoupigny.easywork.exception.ResourceNotFoundException;
-import com.decoupigny.easywork.models.messenger.Message;
+import com.decoupigny.easywork.models.messenger.ChatMessage;
 import com.decoupigny.easywork.models.messenger.MessageStatus;
-import com.decoupigny.easywork.repository.MessageRepository;
+import com.decoupigny.easywork.repository.ChatMessageRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoOperations;
 import org.springframework.data.mongodb.core.query.Criteria;
@@ -15,12 +15,12 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
-public class MessengerService {
-    @Autowired private MessageRepository repository;
-    @Autowired private MessengerRoomService chatRoomService;
+public class ChatMessageService {
+    @Autowired private ChatMessageRepository repository;
+    @Autowired private ChatRoomService chatRoomService;
     @Autowired private MongoOperations mongoOperations;
 
-    public Message save(Message chatMessage) {
+    public ChatMessage save(ChatMessage chatMessage) {
         chatMessage.setStatus(MessageStatus.RECEIVED);
         repository.save(chatMessage);
         return chatMessage;
@@ -31,10 +31,10 @@ public class MessengerService {
                 senderId, recipientId, MessageStatus.RECEIVED);
     }
 
-    public List<Message> findChatMessages(String senderId, String recipientId) {
+    public List<ChatMessage> findChatMessages(String senderId, String recipientId) {
         Optional<String> chatId = chatRoomService.getChatId(senderId, recipientId, false);
 
-        List<Message> messages =
+        List<ChatMessage> messages =
                 chatId.map(cId -> repository.findByChatId(cId)).orElse(new ArrayList<>());
 
         if(messages.size() > 0) {
@@ -44,7 +44,7 @@ public class MessengerService {
         return messages;
     }
 
-    public Message findById(String id) {
+    public ChatMessage findById(String id) {
         return repository
                 .findById(id)
                 .map(chatMessage -> {
@@ -61,6 +61,6 @@ public class MessengerService {
                         .where("senderId").is(senderId)
                         .and("recipientId").is(recipientId));
         Update update = Update.update("status", status);
-        mongoOperations.updateMulti(query, update, Message.class);
+        mongoOperations.updateMulti(query, update, ChatMessage.class);
     }
 }

@@ -1,6 +1,5 @@
 package com.decoupigny.easywork.repository;
 
-
 import com.decoupigny.easywork.models.messenger.ChatRoom;
 import org.springframework.data.mongodb.repository.MongoRepository;
 
