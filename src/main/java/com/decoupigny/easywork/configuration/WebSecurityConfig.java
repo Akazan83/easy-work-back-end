@@ -1,4 +1,4 @@
-package com.decoupigny.easywork.security;
+package com.decoupigny.easywork.configuration;
 
 import com.decoupigny.easywork.security.jwt.AuthEntryPointJwt;
 import com.decoupigny.easywork.security.jwt.AuthTokenFilter;
@@ -21,7 +21,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @Configuration
 @EnableWebSecurity
 @EnableGlobalMethodSecurity(
-        // securedEnabled = true,
+        securedEnabled = true,
         // jsr250Enabled = true,
         prePostEnabled = true)
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
@@ -54,13 +54,20 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-        http.cors().and().csrf().disable()
+        http.cors().and().headers()
+                .frameOptions().disable().and().csrf().disable()
                 .exceptionHandling().authenticationEntryPoint(unauthorizedHandler).and()
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
-                .authorizeRequests().antMatchers("/api/auth/**").permitAll()
+                .authorizeRequests()
+                .antMatchers("/api/auth/**").permitAll()
                 .antMatchers("/api/test/**").permitAll()
                 .antMatchers("/api/**").permitAll()
-                .anyRequest().authenticated();
+                .antMatchers("/app/chat").permitAll()
+                .antMatchers("/*").permitAll()
+                .antMatchers("/messages").permitAll() // On autorise l'appel handshake entre le client et le serveur
+                .antMatchers("/ws").permitAll() // On autorise l'appel handshake entre le client et le serveur
+                .anyRequest()
+                .authenticated();
 
         http.addFilterBefore(authenticationJwtTokenFilter(), UsernamePasswordAuthenticationFilter.class);
     }

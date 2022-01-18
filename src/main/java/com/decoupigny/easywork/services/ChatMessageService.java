@@ -33,7 +33,8 @@ public class ChatMessageService {
 
     public List<ChatMessage> findChatMessages(String senderId, String recipientId) {
         Optional<String> chatId = chatRoomService.getChatId(senderId, recipientId, false);
-
+        System.out.println(senderId + " RECIPIANT : " + recipientId);
+        System.out.println(chatId);
         List<ChatMessage> messages =
                 chatId.map(cId -> repository.findByChatId(cId)).orElse(new ArrayList<>());
 

@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.Optional;
 
+
 @Service
 public class ChatRoomService {
 
@@ -17,8 +18,8 @@ public class ChatRoomService {
 
          return chatRoomRepository
                 .findBySenderIdAndRecipientId(senderId, recipientId)
-                .map(ChatRoom::getChatId);
-                 /*.or(() -> {
+                .map(ChatRoom::getChatId)
+                .or(() -> {
                     if(!createIfNotExist) {
                         return  Optional.empty();
                     }
@@ -42,6 +43,6 @@ public class ChatRoomService {
                     chatRoomRepository.save(recipientSender);
 
                     return Optional.of(chatId);
-                });*/
+                });
     }
 }
