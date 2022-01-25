@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 
+import java.util.Date;
 import java.util.Optional;
 
 @CrossOrigin(origins = "*", maxAge = 3600)
@@ -36,7 +37,9 @@ public class ChatController {
                 new ChatNotification(
                         saved.getId(),
                         saved.getSenderId(),
-                        saved.getSenderName()));
+                        saved.getSenderName(),
+                        "Message",
+                        new Date()));
     }
 
     @GetMapping("/messages/{senderId}/{recipientId}/count")

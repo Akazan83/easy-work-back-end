@@ -10,13 +10,17 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.messaging.simp.SimpMessageSendingOperations;
 
+import java.util.Date;
+
 @SpringBootApplication
 public class EasyWorkApplication {
 
-	private ChatNotification notif = ChatNotification.builder()
-			.id("61db5a373240426ebbf177f3_61db59e13240426ebbf177f2")
-			.senderId("61db59e13240426ebbf177f2")
+	private final ChatNotification notif = ChatNotification.builder()
+			.id("61dc675f1e2a3602b7a4de2d")
+			.senderId("61db5a373240426ebbf177f3")
 			.senderName("Bob")
+			.type("TicketRefused")
+			.creationDate(new Date())
 			.build();
 
 	@Autowired
@@ -36,7 +40,7 @@ public class EasyWorkApplication {
 		return (args) -> {
 			while (true) {
 				try {
-					Thread.sleep(3*1000); // Each 3 sec.
+					Thread.sleep(10*1000); // Each 3 sec.
 					//messagingTemplate.convertAndSend("/topic/progress", this.progress);
 					messagingTemplate.convertAndSendToUser("61db59e13240426ebbf177f2","/queue/messages", this.notif);
 				} catch (Exception e) {

@@ -8,6 +8,7 @@ public class Ticket {
     @Id
     private String id;
     private String owner;
+    private String ownerName;
     private String title;
     private String status;
     private String reference;
@@ -21,9 +22,10 @@ public class Ticket {
 
     }
 
-    public Ticket(String owner, String title, String status, String reference, String creationDate, String endDate, String description, Participant[] participants, Commentary[] commentaries) {
+    public Ticket(String owner,String ownerName, String title, String status, String reference, String creationDate, String endDate, String description, Participant[] participants, Commentary[] commentaries) {
         this.title = title;
         this.owner = owner;
+        this.ownerName = ownerName;
         this.status = status;
         this.reference = reference;
         this.creationDate = creationDate;
@@ -33,10 +35,11 @@ public class Ticket {
         this.commentaries = commentaries;
     }
 
-    public Ticket(String id, String owner, String title, String status, String reference, String creationDate, String endDate, String description, Participant[] participants, Commentary[] commentaries) {
+    public Ticket(String id, String owner,String ownerName, String title, String status, String reference, String creationDate, String endDate, String description, Participant[] participants, Commentary[] commentaries) {
         this.id = id;
         this.title = title;
         this.owner = owner;
+        this.ownerName = ownerName;
         this.status = status;
         this.reference = reference;
         this.creationDate = creationDate;
@@ -60,6 +63,14 @@ public class Ticket {
 
     public void setOwner(String owner) {
         this.owner = owner;
+    }
+
+    public String getOwnerName() {
+        return ownerName;
+    }
+
+    public void setOwnerName(String ownerName) {
+        this.ownerName = ownerName;
     }
 
     public String getTitle() {

@@ -1,20 +1,16 @@
 package com.decoupigny.easywork.controllers;
 
+import com.decoupigny.easywork.models.messenger.ChatNotification;
 import com.decoupigny.easywork.models.ticket.Ticket;
-import com.decoupigny.easywork.models.ticket.TicketStateEnum;
 import com.decoupigny.easywork.repository.TicketRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
-
-import static java.lang.System.in;
+import java.util.*;
 
 @CrossOrigin(origins = "*", maxAge = 3600)
 @RestController
@@ -23,6 +19,9 @@ public class TicketController {
 
     @Autowired
     TicketRepository ticketRepository;
+
+    @Autowired
+    private SimpMessagingTemplate messagingTemplate;
 
     @GetMapping("/tickets")
     public ResponseEntity<List<Ticket>> getAllTickets(@RequestParam(required = false) String title) {
@@ -54,8 +53,11 @@ public class TicketController {
     @PostMapping("/ticket")
     public ResponseEntity<Ticket> createTicket(@RequestBody Ticket ticket) {
         try {
-            Ticket _ticket = ticketRepository.save(new Ticket(ticket.getOwner(), ticket.getTitle(), ticket.getStatus(), ticket.getReference(), ticket.getCreationDate(), ticket.getEndDate(),
+            Ticket _ticket = ticketRepository.save(new Ticket(ticket.getOwner(), ticket.getOwnerName(), ticket.getTitle(), ticket.getStatus(), ticket.getReference(), ticket.getCreationDate(), ticket.getEndDate(),
                     ticket.getDescription(), ticket.getParticipants(), ticket.getCommentaries()));
+
+            sendNotificationToParticipants(ticket,"NewTicket");
+
             return new ResponseEntity<>(_ticket, HttpStatus.CREATED);
         } catch (Exception e) {
             return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
@@ -77,6 +79,17 @@ public class TicketController {
             _ticket.setEndDate(ticket.getEndDate());
             _ticket.setParticipants(ticket.getParticipants());
             _ticket.setCommentaries(ticket.getCommentaries());
+
+            // Send Notification
+            messagingTemplate.convertAndSendToUser(
+                    ticket.getOwner(),"/queue/messages",
+                    new ChatNotification(
+                            ticket.getId(),
+                            ticket.getOwner(),
+                            ticket.getOwnerName(),
+                            "TicketUpdate",
+                            new Date()));
+
             return new ResponseEntity<>(ticketRepository.save(_ticket), HttpStatus.OK);
         } else {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
@@ -87,6 +100,11 @@ public class TicketController {
     public ResponseEntity<HttpStatus> deleteTicket(@PathVariable("id") String id) {
         try {
             ticketRepository.deleteById(id);
+
+            Optional<Ticket> ticket = ticketRepository.findById(id);
+            assert ticket.orElse(null) != null;
+            sendNotificationToParticipants(ticket.orElse(null),"NewTicket");
+
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         } catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
@@ -128,5 +146,18 @@ public class TicketController {
         if(participantNumber == refusedNumber) return "Refusé";
 
         return "En attente";
+    }
+
+    private void sendNotificationToParticipants(Ticket ticket, String type){
+        Arrays.stream(ticket.getParticipants()).forEach(participant -> {
+            messagingTemplate.convertAndSendToUser(
+                    participant.getUserId(),"/queue/messages",
+                    new ChatNotification(
+                            ticket.getId(),
+                            ticket.getOwner(),
+                            ticket.getOwnerName(),
+                            type,
+                            new Date()));
+        });
     }
 }
