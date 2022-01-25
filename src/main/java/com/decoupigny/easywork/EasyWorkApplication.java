@@ -33,7 +33,7 @@ public class EasyWorkApplication {
 	 * Generate random numbers publish with WebSocket protocol each 3 seconds.
 	 * @return a command line runner.
 	 */
-	@Bean
+	/*@Bean
 	public CommandLineRunner websocketDemo() {
 		return (args) -> {
 			while (true) {
@@ -46,18 +46,7 @@ public class EasyWorkApplication {
 				}
 			}
 		};
-	}
+	}*/
 
-	/**
-	 * Get a random integer value in a min / max range.
-	 * @param min min range value
-	 * @param max max range value
-	 * @return A random integer value
-	 */
-	private int randomWithRange(int min, int max)
-	{
-		int range = Math.abs(max - min) + 1;
-		return (int)(Math.random() * range) + (min <= max ? min : max);
-	}
 
 }

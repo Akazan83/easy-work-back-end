@@ -5,6 +5,7 @@ import com.decoupigny.easywork.models.messenger.ChatMessage;
 import com.decoupigny.easywork.models.messenger.MessageStatus;
 import com.decoupigny.easywork.repository.ChatMessageRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoOperations;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
@@ -33,8 +34,9 @@ public class ChatMessageService {
 
     public List<ChatMessage> findChatMessages(String senderId, String recipientId) {
         Optional<String> chatId = chatRoomService.getChatId(senderId, recipientId, false);
+
         List<ChatMessage> messages =
-                chatId.map(cId -> repository.findByChatId(cId)).orElse(new ArrayList<>());
+                chatId.map(cId -> repository.findByChatId(cId,Sort.by(Sort.Direction.DESC, "timestamp"))).orElse(new ArrayList<>());
 
         if(messages.size() > 0) {
             updateStatuses(senderId, recipientId, MessageStatus.DELIVERED);

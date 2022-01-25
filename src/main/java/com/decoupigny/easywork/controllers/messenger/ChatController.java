@@ -31,7 +31,7 @@ public class ChatController {
         chatMessage.setChatId(chatId.get());
 
         ChatMessage saved = chatMessageService.save(chatMessage);
-        System.out.println("From /chat");
+        System.out.println(chatMessage);
         messagingTemplate.convertAndSendToUser(
                 chatMessage.getRecipientId(),"/queue/messages",
                 new Notification(
