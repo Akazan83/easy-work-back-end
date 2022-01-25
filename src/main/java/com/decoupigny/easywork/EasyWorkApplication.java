@@ -1,8 +1,6 @@
 package com.decoupigny.easywork;
 
-import com.decoupigny.easywork.models.messenger.ChatMessage;
-import com.decoupigny.easywork.models.messenger.ChatNotification;
-import com.decoupigny.easywork.models.messenger.MessageStatus;
+import com.decoupigny.easywork.models.messenger.Notification;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
@@ -15,7 +13,7 @@ import java.util.Date;
 @SpringBootApplication
 public class EasyWorkApplication {
 
-	private final ChatNotification notif = ChatNotification.builder()
+	private final Notification notif = Notification.builder()
 			.id("61dc675f1e2a3602b7a4de2d")
 			.senderId("61db5a373240426ebbf177f3")
 			.senderName("Bob")

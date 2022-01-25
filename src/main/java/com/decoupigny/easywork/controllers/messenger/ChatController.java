@@ -1,6 +1,6 @@
 package com.decoupigny.easywork.controllers.messenger;
 import com.decoupigny.easywork.models.messenger.ChatMessage;
-import com.decoupigny.easywork.models.messenger.ChatNotification;
+import com.decoupigny.easywork.models.messenger.Notification;
 import com.decoupigny.easywork.services.ChatMessageService;
 import com.decoupigny.easywork.services.ChatRoomService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,10 +31,10 @@ public class ChatController {
         chatMessage.setChatId(chatId.get());
 
         ChatMessage saved = chatMessageService.save(chatMessage);
-
+        System.out.println("From /chat");
         messagingTemplate.convertAndSendToUser(
                 chatMessage.getRecipientId(),"/queue/messages",
-                new ChatNotification(
+                new Notification(
                         saved.getId(),
                         saved.getSenderId(),
                         saved.getSenderName(),

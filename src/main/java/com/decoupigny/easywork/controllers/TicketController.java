@@ -1,6 +1,6 @@
 package com.decoupigny.easywork.controllers;
 
-import com.decoupigny.easywork.models.messenger.ChatNotification;
+import com.decoupigny.easywork.models.messenger.Notification;
 import com.decoupigny.easywork.models.ticket.Ticket;
 import com.decoupigny.easywork.repository.TicketRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -56,7 +56,7 @@ public class TicketController {
             Ticket _ticket = ticketRepository.save(new Ticket(ticket.getOwner(), ticket.getOwnerName(), ticket.getTitle(), ticket.getStatus(), ticket.getReference(), ticket.getCreationDate(), ticket.getEndDate(),
                     ticket.getDescription(), ticket.getParticipants(), ticket.getCommentaries()));
 
-            sendNotificationToParticipants(ticket,"NewTicket");
+            sendNotificationToParticipants(_ticket,"NewTicket");
 
             return new ResponseEntity<>(_ticket, HttpStatus.CREATED);
         } catch (Exception e) {
@@ -65,7 +65,7 @@ public class TicketController {
     }
 
     @PutMapping("/tickets/{id}")
-    public ResponseEntity<Ticket> updateTicket(@PathVariable("id") String id, @RequestBody Ticket ticket) {
+    public ResponseEntity<Ticket> updateTicket(@PathVariable("id") String id, @RequestBody Ticket ticket, @RequestHeader("type") String updateType) {
         Optional<Ticket> ticketData = ticketRepository.findById(id);
 
         if (ticketData.isPresent()) {
@@ -81,14 +81,16 @@ public class TicketController {
             _ticket.setCommentaries(ticket.getCommentaries());
 
             // Send Notification
-            messagingTemplate.convertAndSendToUser(
-                    ticket.getOwner(),"/queue/messages",
-                    new ChatNotification(
-                            ticket.getId(),
-                            ticket.getOwner(),
-                            ticket.getOwnerName(),
-                            "TicketUpdate",
-                            new Date()));
+            switch (updateType) {
+                case "addNewParticipant" -> {
+                    sendNotificationToParticipants(ticket, "NewTicket");
+                }
+                case "TicketUpdate" -> {
+                    sendNotificationToOwner(ticket, "TicketUpdate");
+                }
+                default -> {
+                }
+            }
 
             return new ResponseEntity<>(ticketRepository.save(_ticket), HttpStatus.OK);
         } else {
@@ -150,14 +152,25 @@ public class TicketController {
 
     private void sendNotificationToParticipants(Ticket ticket, String type){
         Arrays.stream(ticket.getParticipants()).forEach(participant -> {
+            System.out.println(participant.getUserId());
             messagingTemplate.convertAndSendToUser(
                     participant.getUserId(),"/queue/messages",
-                    new ChatNotification(
+                    new Notification(
                             ticket.getId(),
                             ticket.getOwner(),
                             ticket.getOwnerName(),
                             type,
                             new Date()));
         });
+    }
+    private void sendNotificationToOwner(Ticket ticket, String type){
+        messagingTemplate.convertAndSendToUser(
+                ticket.getOwner(),"/queue/messages",
+                new Notification(
+                        ticket.getId(),
+                        ticket.getOwner(),
+                        ticket.getOwnerName(),
+                        type,
+                        new Date()));
     }
 }
