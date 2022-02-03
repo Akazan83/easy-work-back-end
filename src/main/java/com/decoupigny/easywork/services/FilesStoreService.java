@@ -40,10 +40,12 @@ public class FilesStoreService {
 
     public Resource load(String filename) {
         try {
+            System.out.println(filename);
             Path file = root.resolve(filename);
             Resource resource = new UrlResource(file.toUri());
 
             if (resource.exists() || resource.isReadable()) {
+                System.out.println("return " + resource);
                 return resource;
             } else {
                 throw new RuntimeException("Could not read the file!");

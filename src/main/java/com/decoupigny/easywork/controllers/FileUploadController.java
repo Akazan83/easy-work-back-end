@@ -12,6 +12,8 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.method.annotation.MvcUriComponentsBuilder;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -43,7 +45,7 @@ public class FileUploadController {
         List<FileInfo> fileInfos = storageService.loadAll(folderName).map(path -> {
             String filename = path.getFileName().toString();
             String url = MvcUriComponentsBuilder
-                    .fromMethodName(FileUploadController.class, "getFile", path.getFileName().toString()).build().toString();
+                    .fromMethodName(FileUploadController.class, "getFile", path.getFileName().toString(),path.getFileName().toString()).build().toString();
 
             return new FileInfo(filename, url);
         }).collect(Collectors.toList());
@@ -51,10 +53,9 @@ public class FileUploadController {
         return ResponseEntity.status(HttpStatus.OK).body(fileInfos);
     }
 
-    @GetMapping("/files/{filename:.+}")
-    public ResponseEntity<Resource> getFile(@PathVariable String filename) {
-        Resource file = storageService.load(filename);
-        return ResponseEntity.ok()
-                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + file.getFilename() + "\"").body(file);
+    @GetMapping("/files/{folderName}/{filename:.+}")
+    public ResponseEntity<File> getFile(@PathVariable String folderName, @PathVariable String filename) throws IOException {
+        Resource file = storageService.load(folderName +'/'+ filename);
+        return ResponseEntity.ok().body(file.getFile());
     }
 }
