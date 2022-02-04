@@ -53,6 +53,7 @@ public class TicketController {
     @PostMapping("/ticket")
     public ResponseEntity<Ticket> createTicket(@RequestBody Ticket ticket) {
         try {
+            System.out.println(ticket.getOwnerName());
             Ticket _ticket = ticketRepository.save(new Ticket(ticket.getOwner(), ticket.getOwnerName(), ticket.getTitle(), ticket.getStatus(), ticket.getReference(), ticket.getCreationDate(), ticket.getEndDate(),
                     ticket.getDescription(), ticket.getParticipants(), ticket.getCommentaries()));
 
@@ -85,8 +86,11 @@ public class TicketController {
                 case "addNewParticipant" -> {
                     sendNotificationToParticipants(ticket, "NewTicket");
                 }
+                case "TicketApproved" -> {
+                    sendNotificationToOwner(ticket, "TicketApproved");
+                }
                 case "TicketUpdate" -> {
-                    sendNotificationToOwner(ticket, "TicketUpdate");
+                    sendNotificationToParticipants(ticket, "TicketUpdate");
                 }
                 default -> {
                 }
@@ -152,7 +156,7 @@ public class TicketController {
 
     private void sendNotificationToParticipants(Ticket ticket, String type){
         Arrays.stream(ticket.getParticipants()).forEach(participant -> {
-            System.out.println(participant.getUserId());
+            System.out.println(ticket.getOwnerName());
             messagingTemplate.convertAndSendToUser(
                     participant.getUserId(),"/queue/messages",
                     new Notification(
