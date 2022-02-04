@@ -28,13 +28,17 @@ public class FilesStoreService {
         }
     }
 
-    public void save(MultipartFile file, String ticketId) {
+    public void save(MultipartFile file, String userId) {
         try {
-            Path ticketDirectory = Paths.get("uploads/"+ ticketId);
-            Files.createDirectory(ticketDirectory);
+            Path ticketDirectory = Paths.get("uploads/"+ userId);
+
+            if(!Files.exists(ticketDirectory)){
+                Files.createDirectory(ticketDirectory);
+            }
+
             Files.copy(file.getInputStream(), ticketDirectory.resolve(Objects.requireNonNull(file.getOriginalFilename())), StandardCopyOption.REPLACE_EXISTING);
         } catch (Exception e) {
-            throw new RuntimeException("Could not store the file. Error: " + e.getMessage());
+            throw new RuntimeException("Could not store the picture. Error: " + e.getMessage());
         }
     }
 
