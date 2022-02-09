@@ -5,7 +5,6 @@ import com.decoupigny.easywork.models.file.Response;
 import com.decoupigny.easywork.services.FilesStoreService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -26,15 +25,14 @@ public class FileUploadController {
     FilesStoreService storageService;
 
     @PostMapping("/upload")
-    public ResponseEntity<Response> uploadFile(@RequestParam("file") MultipartFile file, @RequestParam("ticketId") String ticketId){
-        String message = "";
+    public ResponseEntity<Response> uploadFile(@RequestParam("file") MultipartFile file){
+        String message;
         try {
-            storageService.save(file,ticketId);
+            storageService.save(file);
             message = "File successfully uploaded: " + file.getOriginalFilename();
             return ResponseEntity.status(HttpStatus.OK).body(new Response(message));
         } catch (Exception e) {
             System.out.println(e);
-            //System.out.println(e);
             message = "Could not upload the file: " + file.getOriginalFilename() + "!" ;
             return ResponseEntity.status(HttpStatus.EXPECTATION_FAILED).body(new Response(message));
         }

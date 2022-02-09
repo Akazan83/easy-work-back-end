@@ -28,14 +28,12 @@ public class FilesStoreService {
         }
     }
 
-    public void save(MultipartFile file, String userId) {
+    public void save(MultipartFile file) {
         try {
-            Path ticketDirectory = Paths.get("uploads/"+ userId);
-
+            Path ticketDirectory = Paths.get("uploads/");
             if(!Files.exists(ticketDirectory)){
                 Files.createDirectory(ticketDirectory);
             }
-
             Files.copy(file.getInputStream(), ticketDirectory.resolve(Objects.requireNonNull(file.getOriginalFilename())), StandardCopyOption.REPLACE_EXISTING);
         } catch (Exception e) {
             throw new RuntimeException("Could not store the picture. Error: " + e.getMessage());
@@ -44,12 +42,10 @@ public class FilesStoreService {
 
     public Resource load(String filename) {
         try {
-            System.out.println(filename);
             Path file = root.resolve(filename);
             Resource resource = new UrlResource(file.toUri());
 
             if (resource.exists() || resource.isReadable()) {
-                System.out.println("return " + resource);
                 return resource;
             } else {
                 throw new RuntimeException("Could not read the file!");
