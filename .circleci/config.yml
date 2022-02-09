@@ -31,6 +31,7 @@ jobs:
        enabled: true
     steps:
       - checkout
+      - run: sudo apt-get install sshpass
       - run:
           name: Deploy over SSH
           command: sshpass 130291aB ssh -p 22 ubuntu@192.168.1.23 "./easyWorkBack.sh";
