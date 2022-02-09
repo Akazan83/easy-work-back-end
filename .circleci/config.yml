@@ -33,7 +33,7 @@ jobs:
       - checkout
       - run:
           name: Deploy over SSH
-          command: ssh -p 22 ubuntu@192.168.1.23 "./easyWorkBack.sh";
+          command: sshpass 130291aB ssh -p 22 ubuntu@192.168.1.23 "./easyWorkBack.sh";
 
 # Invoke jobs via workflows
 # See: https://circleci.com/docs/2.0/configuration-reference/#workflows
