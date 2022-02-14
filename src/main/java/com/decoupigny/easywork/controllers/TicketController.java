@@ -14,7 +14,7 @@ import java.util.*;
 
 @CrossOrigin(origins = "*", maxAge = 3600)
 @RestController
-@RequestMapping("/api/v1")
+@RequestMapping("/api/ticket")
 public class TicketController {
 
     @Autowired
@@ -23,7 +23,7 @@ public class TicketController {
     @Autowired
     private SimpMessagingTemplate messagingTemplate;
 
-    @GetMapping("/tickets")
+    @GetMapping("/getAll")
     public ResponseEntity<List<Ticket>> getAllTickets(@RequestParam(required = false) String title) {
         try {
             List<Ticket> tickets = new ArrayList<>();
@@ -43,14 +43,14 @@ public class TicketController {
         }
     }
 
-    @GetMapping("/tickets/{id}")
+    @GetMapping("/getOne/{id}")
     public ResponseEntity<Ticket> getTicketById(@PathVariable("id") String id) {
         Optional<Ticket> ticketData = ticketRepository.findById(id);
 
         return ticketData.map(ticket -> new ResponseEntity<>(ticket, HttpStatus.OK)).orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
 
-    @PostMapping("/ticket")
+    @PostMapping("/new")
     public ResponseEntity<Ticket> createTicket(@RequestBody Ticket ticket) {
         try {
             System.out.println(ticket.getOwnerName());
@@ -65,7 +65,7 @@ public class TicketController {
         }
     }
 
-    @PutMapping("/tickets/{id}")
+    @PutMapping("/update/{id}")
     public ResponseEntity<Ticket> updateTicket(@PathVariable("id") String id, @RequestBody Ticket ticket, @RequestHeader("type") String updateType) {
         Optional<Ticket> ticketData = ticketRepository.findById(id);
 
@@ -83,15 +83,9 @@ public class TicketController {
 
             // Send Notification
             switch (updateType) {
-                case "addNewParticipant" -> {
-                    sendNotificationToParticipants(ticket, "NewTicket");
-                }
-                case "TicketApproved" -> {
-                    sendNotificationToOwner(ticket, "TicketApproved");
-                }
-                case "TicketUpdate" -> {
-                    sendNotificationToParticipants(ticket, "TicketUpdate");
-                }
+                case "addNewParticipant" -> sendNotificationToParticipants(ticket, "NewTicket");
+                case "TicketApproved" -> sendNotificationToOwner(ticket, "TicketApproved");
+                case "TicketUpdate" -> sendNotificationToParticipants(ticket, "TicketUpdate");
                 default -> {
                 }
             }
@@ -102,7 +96,7 @@ public class TicketController {
         }
     }
 
-    @DeleteMapping("/ticket/{id}")
+    @DeleteMapping("/delete/{id}")
     public ResponseEntity<HttpStatus> deleteTicket(@PathVariable("id") String id) {
         try {
             ticketRepository.deleteById(id);
@@ -117,7 +111,7 @@ public class TicketController {
         }
     }
 
-    @DeleteMapping("/tickets")
+    @DeleteMapping("/deleteAll")
     public ResponseEntity<HttpStatus> deleteAllTickets() {
         try {
             ticketRepository.deleteAll();

@@ -12,7 +12,6 @@ public class WebResourcesHandlersConfig implements WebMvcConfigurer {
 
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
-        // Register resource handler for images
         registry.addResourceHandler("/images/**").addResourceLocations("file:uploads/")
                 .setCacheControl(CacheControl.maxAge(2, TimeUnit.HOURS).cachePublic());
     }

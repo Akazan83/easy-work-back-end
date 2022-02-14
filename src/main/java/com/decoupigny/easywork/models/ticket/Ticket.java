@@ -1,8 +1,12 @@
 package com.decoupigny.easywork.models.ticket;
 
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+@Data
+@NoArgsConstructor
 @Document(collection = "tickets")
 public class Ticket {
     @Id
@@ -17,10 +21,6 @@ public class Ticket {
     private String description;
     private Participant[] participants;
     private Commentary[] commentaries;
-
-    public Ticket() {
-
-    }
 
     public Ticket(String owner,String ownerName, String title, String status, String reference, String creationDate, String endDate, String description, Participant[] participants, Commentary[] commentaries) {
         this.title = title;
@@ -46,94 +46,6 @@ public class Ticket {
         this.endDate = endDate;
         this.description = description;
         this.participants = participants;
-        this.commentaries = commentaries;
-    }
-
-    public String getId() {
-        return id;
-    }
-
-    public void setId(String id) {
-        this.id = id;
-    }
-
-    public String getOwner() {
-        return owner;
-    }
-
-    public void setOwner(String owner) {
-        this.owner = owner;
-    }
-
-    public String getOwnerName() {
-        return ownerName;
-    }
-
-    public void setOwnerName(String ownerName) {
-        this.ownerName = ownerName;
-    }
-
-    public String getTitle() {
-        return title;
-    }
-
-    public void setTitle(String title) {
-        this.title = title;
-    }
-
-    public String getStatus() {
-        return status;
-    }
-
-    public void setStatus(String status) {
-        this.status = status;
-    }
-
-    public String getReference() {
-        return reference;
-    }
-
-    public void setReference(String reference) {
-        this.reference = reference;
-    }
-
-    public String getCreationDate() {
-        return creationDate;
-    }
-
-    public void setCreationDate(String creationDate) {
-        this.creationDate = creationDate;
-    }
-
-    public String getEndDate() {
-        return endDate;
-    }
-
-    public void setEndDate(String endDate) {
-        this.endDate = endDate;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    public Participant[] getParticipants() {
-        return participants;
-    }
-
-    public void setParticipants(Participant[] participants) {
-        this.participants = participants;
-    }
-
-    public Commentary[] getCommentaries() {
-        return commentaries;
-    }
-
-    public void setCommentaries(Commentary[] commentaries) {
         this.commentaries = commentaries;
     }
 

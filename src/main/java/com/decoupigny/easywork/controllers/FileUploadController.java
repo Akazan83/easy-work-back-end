@@ -18,7 +18,7 @@ import java.util.stream.Collectors;
 
 @CrossOrigin(origins = "*", maxAge = 3600)
 @RestController
-@RequestMapping("/api/v1")
+@RequestMapping("/file")
 public class FileUploadController {
 
     @Autowired
@@ -38,7 +38,7 @@ public class FileUploadController {
         }
     }
 
-    @GetMapping("/getFiles/{folderName}")
+    @GetMapping("/getAll/{folderName}")
     public ResponseEntity<List<FileInfo>> getListFiles(@PathVariable String folderName) {
         List<FileInfo> fileInfos = storageService.loadAll(folderName).map(path -> {
             String filename = path.getFileName().toString();
@@ -51,7 +51,7 @@ public class FileUploadController {
         return ResponseEntity.status(HttpStatus.OK).body(fileInfos);
     }
 
-    @GetMapping("/files/{folderName}/{filename:.+}")
+    @GetMapping("/getOne/{folderName}/{filename:.+}")
     public ResponseEntity<File> getFile(@PathVariable String folderName, @PathVariable String filename) throws IOException {
         Resource file = storageService.load(folderName +'/'+ filename);
         return ResponseEntity.ok().body(file.getFile());
