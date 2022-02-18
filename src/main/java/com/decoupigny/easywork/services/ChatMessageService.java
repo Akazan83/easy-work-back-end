@@ -61,6 +61,7 @@ public class ChatMessageService {
                 Criteria
                         .where("senderId").is(senderId)
                         .and("recipientId").is(recipientId));
+
         Update update = Update.update("status", status);
         mongoOperations.updateMulti(query, update, ChatMessage.class);
     }

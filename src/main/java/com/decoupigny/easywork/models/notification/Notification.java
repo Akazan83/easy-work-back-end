@@ -1,4 +1,4 @@
-package com.decoupigny.easywork.models.messenger;
+package com.decoupigny.easywork.models.notification;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

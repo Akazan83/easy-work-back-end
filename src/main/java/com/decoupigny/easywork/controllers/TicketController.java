@@ -1,8 +1,10 @@
 package com.decoupigny.easywork.controllers;
 
-import com.decoupigny.easywork.models.messenger.Notification;
+import com.decoupigny.easywork.models.notification.Notification;
 import com.decoupigny.easywork.models.ticket.Ticket;
-import com.decoupigny.easywork.repository.TicketRepository;
+import com.decoupigny.easywork.services.TicketService;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
@@ -14,11 +16,13 @@ import java.util.*;
 
 @CrossOrigin(origins = "*", maxAge = 3600)
 @RestController
+@ApiOperation(value = "Visualize and manage tickets")
+@Api(tags = "Ticket")
 @RequestMapping("/api/ticket")
 public class TicketController {
 
     @Autowired
-    TicketRepository ticketRepository;
+    TicketService ticketService;
 
     @Autowired
     private SimpMessagingTemplate messagingTemplate;
@@ -29,9 +33,9 @@ public class TicketController {
             List<Ticket> tickets = new ArrayList<>();
 
             if (title == null)
-                tickets.addAll(ticketRepository.findAll());
+                tickets.addAll(ticketService.findAll());
             else
-                tickets.addAll(ticketRepository.findByTitleContaining(title));
+                tickets.addAll(ticketService.findByTitleContaining(title));
 
             if (tickets.isEmpty()) {
                 return new ResponseEntity<>(HttpStatus.NO_CONTENT);
@@ -45,7 +49,7 @@ public class TicketController {
 
     @GetMapping("/getOne/{id}")
     public ResponseEntity<Ticket> getTicketById(@PathVariable("id") String id) {
-        Optional<Ticket> ticketData = ticketRepository.findById(id);
+        Optional<Ticket> ticketData = ticketService.findById(id);
 
         return ticketData.map(ticket -> new ResponseEntity<>(ticket, HttpStatus.OK)).orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
@@ -54,7 +58,7 @@ public class TicketController {
     public ResponseEntity<Ticket> createTicket(@RequestBody Ticket ticket) {
         try {
             System.out.println(ticket.getOwnerName());
-            Ticket _ticket = ticketRepository.save(new Ticket(ticket.getOwner(), ticket.getOwnerName(), ticket.getTitle(), ticket.getStatus(), ticket.getReference(), ticket.getCreationDate(), ticket.getEndDate(),
+            Ticket _ticket = ticketService.save(new Ticket(ticket.getOwner(), ticket.getOwnerName(), ticket.getTitle(), ticket.getStatus(), ticket.getReference(), ticket.getCreationDate(), ticket.getEndDate(),
                     ticket.getDescription(), ticket.getParticipants(), ticket.getCommentaries()));
 
             sendNotificationToParticipants(_ticket,"NewTicket");
@@ -67,20 +71,10 @@ public class TicketController {
 
     @PutMapping("/update/{id}")
     public ResponseEntity<Ticket> updateTicket(@PathVariable("id") String id, @RequestBody Ticket ticket, @RequestHeader("type") String updateType) {
-        Optional<Ticket> ticketData = ticketRepository.findById(id);
+        Optional<Ticket> ticketData = ticketService.findById(id);
 
         if (ticketData.isPresent()) {
-            Ticket _ticket = ticketData.get();
-            _ticket.setTitle(ticket.getTitle());
-            _ticket.setDescription(ticket.getDescription());
-            _ticket.setCreationDate(ticket.getCreationDate());
-            _ticket.setOwner(ticket.getOwner());
-            _ticket.setStatus(checkStatus(ticket));
-            _ticket.setReference(ticket.getReference());
-            _ticket.setEndDate(ticket.getEndDate());
-            _ticket.setParticipants(ticket.getParticipants());
-            _ticket.setCommentaries(ticket.getCommentaries());
-
+            Ticket _ticket = ticketService.updateTicket(id, ticket);
             // Send Notification
             switch (updateType) {
                 case "addNewParticipant" -> sendNotificationToParticipants(ticket, "NewTicket");
@@ -90,7 +84,7 @@ public class TicketController {
                 }
             }
 
-            return new ResponseEntity<>(ticketRepository.save(_ticket), HttpStatus.OK);
+            return new ResponseEntity<>(ticketService.save(_ticket), HttpStatus.OK);
         } else {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
@@ -99,9 +93,9 @@ public class TicketController {
     @DeleteMapping("/delete/{id}")
     public ResponseEntity<HttpStatus> deleteTicket(@PathVariable("id") String id) {
         try {
-            ticketRepository.deleteById(id);
+            Optional<Ticket> ticket = ticketService.findById(id);
 
-            Optional<Ticket> ticket = ticketRepository.findById(id);
+            ticketService.deleteById(id);
             assert ticket.orElse(null) != null;
             sendNotificationToParticipants(ticket.orElse(null),"NewTicket");
 
@@ -114,7 +108,7 @@ public class TicketController {
     @DeleteMapping("/deleteAll")
     public ResponseEntity<HttpStatus> deleteAllTickets() {
         try {
-            ticketRepository.deleteAll();
+            ticketService.deleteAll();
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         } catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
@@ -125,7 +119,7 @@ public class TicketController {
     public ResponseEntity<List<Ticket>> findByStatus(@PathVariable String status, @PathVariable int page) {
         try {
             List<Ticket> tickets;
-            tickets = ticketRepository.findByStatus(status, PageRequest.of(page,9));
+            tickets = ticketService.findByStatus(status, PageRequest.of(page,9));
             if (tickets.isEmpty()) {
                 return new ResponseEntity<>(HttpStatus.NO_CONTENT);
             }
@@ -135,20 +129,10 @@ public class TicketController {
         }
     }
 
-    private String checkStatus(Ticket ticket){
-        int participantNumber = ticket.getParticipants().length;
-        if(participantNumber == 0) return "En attente";
-
-        final int approvedNumber = (int) Arrays.stream(ticket.getParticipants()).filter(participant -> participant.getStatus().equals("Validé") ).count();
-        final int refusedNumber = (int) Arrays.stream(ticket.getParticipants()).filter(participant -> participant.getStatus().equals("Refusé") ).count();
-
-        if(participantNumber == approvedNumber) return "Validé";
-        if(participantNumber == refusedNumber) return "Refusé";
-
-        return "En attente";
-    }
-
     private void sendNotificationToParticipants(Ticket ticket, String type){
+        if(ticket.getParticipants() == null){
+            return;
+        }
         Arrays.stream(ticket.getParticipants()).forEach(participant -> {
             System.out.println(ticket.getOwnerName());
             messagingTemplate.convertAndSendToUser(

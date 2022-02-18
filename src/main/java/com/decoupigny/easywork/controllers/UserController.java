@@ -2,6 +2,7 @@ package com.decoupigny.easywork.controllers;
 
 import com.decoupigny.easywork.models.user.User;
 import com.decoupigny.easywork.repository.UserRepository;
+import io.swagger.annotations.Api;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -15,6 +16,7 @@ import java.util.List;
 
 @CrossOrigin(origins = "*", maxAge = 3600)
 @RestController
+@Api(tags = "Users")
 @RequestMapping("/api/user")
 public class UserController {
 
