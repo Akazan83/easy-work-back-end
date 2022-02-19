@@ -16,6 +16,21 @@ jobs:
     # Add steps to the job 
     # See: https://circleci.com/docs/2.0/configuration-reference/#steps
     steps:
+      - run:
+          name: Prepare env
+          command: curl -fsSL https://www.mongodb.org/static/pgp/server-4.4.asc | sudo apt-key add -
+      - run:
+          name: Update env
+          command: sudo apt update
+      - run:
+          name: Download mongo
+          command: sudo apt install mongodb-org
+      - run:
+          name: Start mongo
+          command: sudo systemctl start mongod.service
+      - run:
+          name: Verify mongo
+          command: sudo systemctl status mongod
       # Checkout the code as the first step.
       - checkout
       # Use mvn clean and package as the standard maven build phase
