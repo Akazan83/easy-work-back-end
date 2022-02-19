@@ -30,7 +30,7 @@ jobs:
           command: sudo apt install mongodb-org
       - run:
           name: Start mongo
-          command: export PATH=$PATH:/usr/local/mongodb/bin
+          command: sudo systemctl enable MongoDB
       - run:
           name: Verify mongo
           command: start mongod
