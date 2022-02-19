@@ -23,11 +23,11 @@ jobs:
           name: Prepare env
           command: sudo add-apt-repository 'deb [arch=amd64] https://repo.mongodb.org/apt/ubuntu bionic/mongodb-org/4.0 multiverse'
       - run:
+          name: Download mongo
+          command: sudo apt-get install mongodb
+      - run:
           name: Update env
           command: sudo apt update
-      - run:
-          name: Download mongo
-          command: sudo apt install mongodb-org
       - run:
           name: Start mongo
           command: ls /etc/init.d/
