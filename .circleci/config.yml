@@ -30,10 +30,10 @@ jobs:
           command: sudo apt install mongodb-org
       - run:
           name: Start mongo
-          command: start mongod
+          command: export PATH=$PATH:/usr/local/mongodb/bin
       - run:
           name: Verify mongo
-          command: mongod --version
+          command: start mongod
       # Checkout the code as the first step.
       - checkout
       # Use mvn clean and package as the standard maven build phase
