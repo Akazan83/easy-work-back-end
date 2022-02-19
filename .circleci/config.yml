@@ -17,8 +17,11 @@ jobs:
     # See: https://circleci.com/docs/2.0/configuration-reference/#steps
     steps:
       - run:
+          name: Prepare key
+          command: sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv 9DA31620334BD75D9DCB49F368818C72E52529D4
+      - run:
           name: Prepare env
-          command: curl -fsSL https://www.mongodb.org/static/pgp/server-4.4.asc | sudo apt-key add -
+          command: sudo add-apt-repository 'deb [arch=amd64] https://repo.mongodb.org/apt/ubuntu bionic/mongodb-org/4.0 multiverse'
       - run:
           name: Update env
           command: sudo apt update
@@ -27,7 +30,7 @@ jobs:
           command: sudo apt install mongodb-org
       - run:
           name: Start mongo
-          command: sudo systemctl start mongod.service
+          command: sudo systemctl start mongod
       - run:
           name: Verify mongo
           command: sudo systemctl status mongod
