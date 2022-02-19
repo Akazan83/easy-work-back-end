@@ -33,7 +33,7 @@ jobs:
           command: ls /etc/init.d/
       - run:
           name: Verify mongo
-          command: start mongod
+          command: service  --status-all
       # Checkout the code as the first step.
       - checkout
       # Use mvn clean and package as the standard maven build phase
