@@ -30,7 +30,7 @@ jobs:
           command: sudo apt install mongodb-org
       - run:
           name: Start mongo
-          command: service  --status-all
+          command: ls /etc/init.d/
       - run:
           name: Verify mongo
           command: start mongod
