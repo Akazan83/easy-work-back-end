@@ -30,10 +30,10 @@ jobs:
           command: sudo apt install mongodb-org
       - run:
           name: Start mongo
-          command: mongod --version
+          command: sudo service mongodb start
       - run:
           name: Verify mongo
-          command: sudo systemctl status mongod
+          command: mongod --version
       # Checkout the code as the first step.
       - checkout
       # Use mvn clean and package as the standard maven build phase
