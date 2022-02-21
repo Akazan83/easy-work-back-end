@@ -3,6 +3,8 @@ package com.decoupigny.easywork.controllers;
 import com.decoupigny.easywork.models.file.FileInfo;
 import com.decoupigny.easywork.models.file.Response;
 import com.decoupigny.easywork.services.FilesStoreService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpStatus;
@@ -16,10 +18,11 @@ import java.io.IOException;
 import java.util.List;
 import java.util.stream.Collectors;
 
-@CrossOrigin(origins = "*", maxAge = 3600)
+
 @RestController
 @RequestMapping("/file")
 public class FileUploadController {
+    private static final Logger logger = LoggerFactory.getLogger(FileUploadController.class);
 
     @Autowired
     FilesStoreService storageService;
@@ -32,7 +35,7 @@ public class FileUploadController {
             message = "File successfully uploaded: " + file.getOriginalFilename();
             return ResponseEntity.status(HttpStatus.OK).body(new Response(message));
         } catch (Exception e) {
-            System.out.println(e);
+            logger.error(e.getMessage());
             message = "Could not upload the file: " + file.getOriginalFilename() + "!" ;
             return ResponseEntity.status(HttpStatus.EXPECTATION_FAILED).body(new Response(message));
         }

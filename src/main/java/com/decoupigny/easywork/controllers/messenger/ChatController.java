@@ -1,4 +1,5 @@
 package com.decoupigny.easywork.controllers.messenger;
+
 import com.decoupigny.easywork.models.messenger.ChatMessage;
 import com.decoupigny.easywork.models.notification.Notification;
 import com.decoupigny.easywork.services.ChatMessageService;
@@ -9,14 +10,14 @@ import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 
 import java.util.Date;
+import java.util.List;
 import java.util.Optional;
 
-@CrossOrigin(origins = "*", maxAge = 3600)
+
 @Controller
 public class ChatController {
 
@@ -32,7 +33,7 @@ public class ChatController {
         chatId.ifPresent(chatMessage::setChatId);
 
         ChatMessage saved = chatMessageService.save(chatMessage);
-        System.out.println(chatMessage);
+
         messagingTemplate.convertAndSendToUser(
                 chatMessage.getRecipientId(),"/queue/messages",
                 new Notification(
@@ -53,14 +54,14 @@ public class ChatController {
     }
 
     @GetMapping("/messages/{senderId}/{recipientId}")
-    public ResponseEntity<?> findChatMessages ( @PathVariable String senderId,
-                                                @PathVariable String recipientId) {
+    public ResponseEntity<List<ChatMessage>> findChatMessages (@PathVariable String senderId,
+                                                               @PathVariable String recipientId) {
         return ResponseEntity
                 .ok(chatMessageService.findChatMessages(senderId, recipientId));
     }
 
     @GetMapping("/messages/{id}")
-    public ResponseEntity<?> findMessage ( @PathVariable String id) {
+    public ResponseEntity<ChatMessage> findMessage ( @PathVariable String id) {
         return ResponseEntity
                 .ok(chatMessageService.findById(id));
     }

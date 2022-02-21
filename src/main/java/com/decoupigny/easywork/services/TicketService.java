@@ -48,36 +48,40 @@ public class TicketService {
         Optional<Ticket> ticketData = ticketRepository.findById(id);
 
         if (ticketData.isPresent()) {
-            Ticket _ticket = ticketData.get();
-            _ticket.setTitle(ticket.getTitle());
-            _ticket.setDescription(ticket.getDescription());
-            _ticket.setCreationDate(ticket.getCreationDate());
-            _ticket.setOwner(ticket.getOwner());
-            _ticket.setStatus(checkStatus(ticket));
-            _ticket.setReference(ticket.getReference());
-            _ticket.setEndDate(ticket.getEndDate());
-            _ticket.setParticipants(ticket.getParticipants());
-            _ticket.setCommentaries(ticket.getCommentaries());
+            Ticket updatedTicket = ticketData.get();
+            updatedTicket.setTitle(ticket.getTitle());
+            updatedTicket.setDescription(ticket.getDescription());
+            updatedTicket.setCreationDate(ticket.getCreationDate());
+            updatedTicket.setOwner(ticket.getOwner());
+            updatedTicket.setStatus(checkStatus(ticket));
+            updatedTicket.setReference(ticket.getReference());
+            updatedTicket.setEndDate(ticket.getEndDate());
+            updatedTicket.setParticipants(ticket.getParticipants());
+            updatedTicket.setCommentaries(ticket.getCommentaries());
         }
 
         return ticket;
     }
 
     private String checkStatus(Ticket ticket){
+        final String WAITING = "En attente";
+        final String VALID = "Validé";
+        final String REFUSE = "Refusé";
+
         if(ticket.getParticipants() == null ){
-            return "En attente";
+            return WAITING;
         }
 
         int participantNumber = ticket.getParticipants().length;
-        if(participantNumber == 0) return "En attente";
+        if(participantNumber == 0) return WAITING;
 
-        final int approvedNumber = (int) Arrays.stream(ticket.getParticipants()).filter(participant -> participant.getStatus().equals("Validé") ).count();
-        final int refusedNumber = (int) Arrays.stream(ticket.getParticipants()).filter(participant -> participant.getStatus().equals("Refusé") ).count();
+        final int approvedNumber = (int) Arrays.stream(ticket.getParticipants()).filter(participant -> participant.getStatus().equals(VALID) ).count();
+        final int refusedNumber = (int) Arrays.stream(ticket.getParticipants()).filter(participant -> participant.getStatus().equals(REFUSE) ).count();
 
-        if(participantNumber == approvedNumber) return "Validé";
-        if(participantNumber == refusedNumber) return "Refusé";
+        if(participantNumber == approvedNumber) return VALID;
+        if(participantNumber == refusedNumber) return REFUSE;
 
-        return "En attente";
+        return WAITING;
     }
 
 

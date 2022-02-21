@@ -6,6 +6,7 @@ import com.decoupigny.easywork.repository.TicketRepository;
 import com.decoupigny.easywork.services.TicketService;
 import org.json.JSONObject;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -15,6 +16,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.web.context.WebApplicationContext;
 
 import java.util.Arrays;
 import java.util.List;
@@ -25,6 +28,7 @@ import static org.mockito.Mockito.doReturn;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -41,6 +45,15 @@ class TicketControllerTest {
 
     @InjectMocks
     private TicketService ticketService;
+
+    @Autowired
+    private WebApplicationContext webApplicationContext;
+
+    @BeforeEach()
+    public void setup()
+    {
+        mockMvc = MockMvcBuilders.webAppContextSetup(webApplicationContext).build();
+    }
 
     @Test
     void createTicket() {
@@ -94,7 +107,8 @@ class TicketControllerTest {
         mockMvc.perform(put("/api/ticket/update/001")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(jsonString)
-                        .header("type","test"))
+                        .header("type","test")
+                        .header("Origin","*"))
                 .andExpect(status().isOk());
     }
 
@@ -102,8 +116,8 @@ class TicketControllerTest {
     void deleteTicket() throws Exception {
         saveOneTicket();
 
-        mockMvc.perform(delete("/api/ticket/delete/001").
-                        contentType(MediaType.APPLICATION_JSON)
+        mockMvc.perform(delete("/api/ticket/delete/001")
+                        .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isNoContent());
     }

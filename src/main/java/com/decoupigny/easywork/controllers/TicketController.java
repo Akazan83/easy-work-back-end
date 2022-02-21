@@ -5,6 +5,8 @@ import com.decoupigny.easywork.models.ticket.Ticket;
 import com.decoupigny.easywork.services.TicketService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
@@ -14,12 +16,13 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.*;
 
-@CrossOrigin(origins = "*", maxAge = 3600)
 @RestController
 @ApiOperation(value = "Visualize and manage tickets")
 @Api(tags = "Ticket")
 @RequestMapping("/api/ticket")
 public class TicketController {
+
+    private static final Logger logger = LoggerFactory.getLogger(TicketController.class);
 
     @Autowired
     TicketService ticketService;
@@ -57,13 +60,12 @@ public class TicketController {
     @PostMapping("/new")
     public ResponseEntity<Ticket> createTicket(@RequestBody Ticket ticket) {
         try {
-            System.out.println(ticket.getOwnerName());
-            Ticket _ticket = ticketService.save(new Ticket(ticket.getOwner(), ticket.getOwnerName(), ticket.getTitle(), ticket.getStatus(), ticket.getReference(), ticket.getCreationDate(), ticket.getEndDate(),
+            Ticket newTicket = ticketService.save(new Ticket(ticket.getOwner(), ticket.getOwnerName(), ticket.getTitle(), ticket.getStatus(), ticket.getReference(), ticket.getCreationDate(), ticket.getEndDate(),
                     ticket.getDescription(), ticket.getParticipants(), ticket.getCommentaries()));
 
-            sendNotificationToParticipants(_ticket,"NewTicket");
+            sendNotificationToParticipants(newTicket,"NewTicket");
 
-            return new ResponseEntity<>(_ticket, HttpStatus.CREATED);
+            return new ResponseEntity<>(newTicket, HttpStatus.CREATED);
         } catch (Exception e) {
             return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
         }
@@ -74,17 +76,18 @@ public class TicketController {
         Optional<Ticket> ticketData = ticketService.findById(id);
 
         if (ticketData.isPresent()) {
-            Ticket _ticket = ticketService.updateTicket(id, ticket);
+            Ticket updateTicket = ticketService.updateTicket(id, ticket);
             // Send Notification
             switch (updateType) {
                 case "addNewParticipant" -> sendNotificationToParticipants(ticket, "NewTicket");
                 case "TicketApproved" -> sendNotificationToOwner(ticket, "TicketApproved");
                 case "TicketUpdate" -> sendNotificationToParticipants(ticket, "TicketUpdate");
                 default -> {
+                    logger.error("UpdateType for ticket " + updateTicket.getId() + " was " + updateType);
                 }
             }
 
-            return new ResponseEntity<>(ticketService.save(_ticket), HttpStatus.OK);
+            return new ResponseEntity<>(ticketService.save(updateTicket), HttpStatus.OK);
         } else {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
@@ -134,7 +137,6 @@ public class TicketController {
             return;
         }
         Arrays.stream(ticket.getParticipants()).forEach(participant -> {
-            System.out.println(ticket.getOwnerName());
             messagingTemplate.convertAndSendToUser(
                     participant.getUserId(),"/queue/messages",
                     new Notification(

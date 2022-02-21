@@ -38,7 +38,7 @@ public class ChatMessageService {
         List<ChatMessage> messages =
                 chatId.map(cId -> repository.findByChatId(cId,Sort.by(Sort.Direction.DESC, "timestamp"))).orElse(new ArrayList<>());
 
-        if(messages.size() > 0) {
+        if(!messages.isEmpty()) {
             updateStatuses(senderId, recipientId, MessageStatus.DELIVERED);
         }
 
