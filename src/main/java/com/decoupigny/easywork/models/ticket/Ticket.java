@@ -1,5 +1,6 @@
 package com.decoupigny.easywork.models.ticket;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.Id;
@@ -7,6 +8,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 
 @Data
 @NoArgsConstructor
+@AllArgsConstructor
 @Document(collection = "tickets")
 public class Ticket {
     @Id
@@ -23,20 +25,6 @@ public class Ticket {
     private Commentary[] commentaries;
 
     public Ticket(String owner,String ownerName, String title, String status, String reference, String creationDate, String endDate, String description, Participant[] participants, Commentary[] commentaries) {
-        this.title = title;
-        this.owner = owner;
-        this.ownerName = ownerName;
-        this.status = status;
-        this.reference = reference;
-        this.creationDate = creationDate;
-        this.endDate = endDate;
-        this.description = description;
-        this.participants = participants;
-        this.commentaries = commentaries;
-    }
-
-    public Ticket(String id, String owner,String ownerName, String title, String status, String reference, String creationDate, String endDate, String description, Participant[] participants, Commentary[] commentaries) {
-        this.id = id;
         this.title = title;
         this.owner = owner;
         this.ownerName = ownerName;
