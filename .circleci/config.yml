@@ -41,6 +41,9 @@ jobs:
       - run:
           name: Test
           command: mvn test
+      - run:
+          name: Test
+          command: mvn -Dsonar.host.url=http://akazanjenkins.ddns.net:9000 sonar:sonar
 
 # Invoke jobs via workflows
 # See: https://circleci.com/docs/2.0/configuration-reference/#workflows
