@@ -18,9 +18,9 @@ import java.io.IOException;
 import java.util.List;
 import java.util.stream.Collectors;
 
-
+@CrossOrigin(origins = "http://localhost:4200")
 @RestController
-@RequestMapping("/file")
+@RequestMapping("/api/file")
 public class FileUploadController {
     private static final Logger logger = LoggerFactory.getLogger(FileUploadController.class);
 

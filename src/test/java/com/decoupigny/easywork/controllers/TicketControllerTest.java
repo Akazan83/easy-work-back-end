@@ -107,8 +107,7 @@ class TicketControllerTest {
         mockMvc.perform(put("/api/ticket/update/001")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(jsonString)
-                        .header("type","test")
-                        .header("Origin","*"))
+                        .header("type","test"))
                 .andExpect(status().isOk());
     }
 

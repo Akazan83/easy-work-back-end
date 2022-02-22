@@ -2,6 +2,7 @@ package com.decoupigny.easywork.controllers;
 
 import com.decoupigny.easywork.models.notification.Notification;
 import com.decoupigny.easywork.models.ticket.Ticket;
+import com.decoupigny.easywork.models.ticket.TicketDto;
 import com.decoupigny.easywork.services.TicketService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -16,6 +17,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.*;
 
+@CrossOrigin(origins = "http://localhost:4200")
 @RestController
 @ApiOperation(value = "Visualize and manage tickets")
 @Api(tags = "Ticket")
@@ -58,10 +60,9 @@ public class TicketController {
     }
 
     @PostMapping("/new")
-    public ResponseEntity<Ticket> createTicket(@RequestBody Ticket ticket) {
+    public ResponseEntity<Ticket> createTicket(@RequestBody TicketDto ticket) {
         try {
-            Ticket newTicket = ticketService.save(new Ticket(ticket.getOwner(), ticket.getOwnerName(), ticket.getTitle(), ticket.getStatus(), ticket.getReference(), ticket.getCreationDate(), ticket.getEndDate(),
-                    ticket.getDescription(), ticket.getParticipants(), ticket.getCommentaries()));
+            Ticket newTicket = ticketService.save(ticket.toEntity());
 
             sendNotificationToParticipants(newTicket,"NewTicket");
 
@@ -72,16 +73,16 @@ public class TicketController {
     }
 
     @PutMapping("/update/{id}")
-    public ResponseEntity<Ticket> updateTicket(@PathVariable("id") String id, @RequestBody Ticket ticket, @RequestHeader("type") String updateType) {
+    public ResponseEntity<Ticket> updateTicket(@PathVariable("id") String id, @RequestBody TicketDto ticket, @RequestHeader("type") String updateType) {
         Optional<Ticket> ticketData = ticketService.findById(id);
 
         if (ticketData.isPresent()) {
-            Ticket updateTicket = ticketService.updateTicket(id, ticket);
+            Ticket updateTicket = ticketService.updateTicket(id, ticket.toEntity());
             // Send Notification
             switch (updateType) {
-                case "addNewParticipant" -> sendNotificationToParticipants(ticket, "NewTicket");
-                case "TicketApproved" -> sendNotificationToOwner(ticket, "TicketApproved");
-                case "TicketUpdate" -> sendNotificationToParticipants(ticket, "TicketUpdate");
+                case "addNewParticipant" -> sendNotificationToParticipants(updateTicket, "NewTicket");
+                case "TicketApproved" -> sendNotificationToOwner(updateTicket, "TicketApproved");
+                case "TicketUpdate" -> sendNotificationToParticipants(updateTicket, "TicketUpdate");
                 default -> {
                     logger.error("UpdateType for ticket " + updateTicket.getId() + " was " + updateType);
                 }
