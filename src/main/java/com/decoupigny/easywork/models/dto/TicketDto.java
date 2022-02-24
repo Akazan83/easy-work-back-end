@@ -1,5 +1,8 @@
-package com.decoupigny.easywork.models.ticket;
+package com.decoupigny.easywork.models.dto;
 
+import com.decoupigny.easywork.models.ticket.Commentary;
+import com.decoupigny.easywork.models.ticket.Participant;
+import com.decoupigny.easywork.models.ticket.Ticket;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.Id;

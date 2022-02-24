@@ -53,6 +53,7 @@ class TicketControllerTest {
     public void setup()
     {
         mockMvc = MockMvcBuilders.webAppContextSetup(webApplicationContext).build();
+        mongoTemplate.dropCollection(Ticket.class);
     }
 
     @Test

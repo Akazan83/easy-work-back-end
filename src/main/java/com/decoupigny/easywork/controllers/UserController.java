@@ -4,7 +4,6 @@ import com.decoupigny.easywork.models.user.User;
 import com.decoupigny.easywork.repository.UserRepository;
 import io.swagger.annotations.Api;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -32,12 +31,12 @@ public class UserController {
                 users.add(user);
             }
             if (users.isEmpty()) {
-                return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+                return ResponseEntity.noContent().build();
             }
 
-            return new ResponseEntity<>(users, HttpStatus.OK);
+            return ResponseEntity.ok(users);
         } catch (Exception e) {
-            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+            return ResponseEntity.internalServerError().build();
         }
     }
 }

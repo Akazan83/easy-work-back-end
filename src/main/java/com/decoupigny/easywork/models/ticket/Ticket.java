@@ -23,23 +23,4 @@ public class Ticket {
     private String description;
     private Participant[] participants;
     private Commentary[] commentaries;
-
-    public Ticket(String owner,String ownerName, String title, String status, String reference, String creationDate, String endDate, String description, Participant[] participants, Commentary[] commentaries) {
-        this.title = title;
-        this.owner = owner;
-        this.ownerName = ownerName;
-        this.status = status;
-        this.reference = reference;
-        this.creationDate = creationDate;
-        this.endDate = endDate;
-        this.description = description;
-        this.participants = participants;
-        this.commentaries = commentaries;
-    }
-
-    @Override
-    public String toString() {
-        return "Ticket [id=" + id + ", title=" + title + ", desc=" + description + "]";
-    }
-
 }

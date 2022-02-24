@@ -2,7 +2,7 @@ package com.decoupigny.easywork.controllers;
 
 import com.decoupigny.easywork.models.notification.Notification;
 import com.decoupigny.easywork.models.ticket.Ticket;
-import com.decoupigny.easywork.models.ticket.TicketDto;
+import com.decoupigny.easywork.models.dto.TicketDto;
 import com.decoupigny.easywork.services.TicketService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -43,12 +43,12 @@ public class TicketController {
                 tickets.addAll(ticketService.findByTitleContaining(title));
 
             if (tickets.isEmpty()) {
-                return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+                return ResponseEntity.notFound().build();
             }
 
-            return new ResponseEntity<>(tickets, HttpStatus.OK);
+            return ResponseEntity.ok(tickets);
         } catch (Exception e) {
-            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+            return ResponseEntity.internalServerError().build();
         }
     }
 
@@ -56,7 +56,7 @@ public class TicketController {
     public ResponseEntity<Ticket> getTicketById(@PathVariable("id") String id) {
         Optional<Ticket> ticketData = ticketService.findById(id);
 
-        return ticketData.map(ticket -> new ResponseEntity<>(ticket, HttpStatus.OK)).orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
+        return ticketData.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
     }
 
     @PostMapping("/new")
@@ -66,9 +66,9 @@ public class TicketController {
 
             sendNotificationToParticipants(newTicket,"NewTicket");
 
-            return new ResponseEntity<>(newTicket, HttpStatus.CREATED);
+            return  ResponseEntity.status(HttpStatus.CREATED).body(newTicket);
         } catch (Exception e) {
-            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+            return ResponseEntity.internalServerError().build();
         }
     }
 
@@ -88,9 +88,9 @@ public class TicketController {
                 }
             }
 
-            return new ResponseEntity<>(ticketService.save(updateTicket), HttpStatus.OK);
+            return ResponseEntity.ok(ticketService.save(updateTicket));
         } else {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            return ResponseEntity.notFound().build();
         }
     }
 
@@ -103,9 +103,9 @@ public class TicketController {
             assert ticket.orElse(null) != null;
             sendNotificationToParticipants(ticket.orElse(null),"NewTicket");
 
-            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+            return ResponseEntity.noContent().build();
         } catch (Exception e) {
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+            return ResponseEntity.internalServerError().build();
         }
     }
 
@@ -113,9 +113,9 @@ public class TicketController {
     public ResponseEntity<HttpStatus> deleteAllTickets() {
         try {
             ticketService.deleteAll();
-            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+            return ResponseEntity.noContent().build();
         } catch (Exception e) {
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+            return ResponseEntity.internalServerError().build();
         }
     }
 
@@ -125,11 +125,11 @@ public class TicketController {
             List<Ticket> tickets;
             tickets = ticketService.findByStatus(status, PageRequest.of(page,9));
             if (tickets.isEmpty()) {
-                return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+                return ResponseEntity.noContent().build();
             }
-            return new ResponseEntity<>(tickets, HttpStatus.OK);
+            return ResponseEntity.ok(tickets);
         } catch (Exception e) {
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+            return ResponseEntity.internalServerError().build();
         }
     }
 
