@@ -28,6 +28,7 @@ public class TicketDto {
 
         entity.setId(this.id);
         entity.setTitle(this.title);
+        entity.setOwnerName(this.ownerName);
         entity.setOwner(this.owner);
         entity.setStatus(this.status);
         entity.setReference(this.reference);

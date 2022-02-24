@@ -61,6 +61,7 @@ public class TicketController {
 
     @PostMapping("/new")
     public ResponseEntity<Ticket> createTicket(@RequestBody TicketDto ticket) {
+        System.out.println("new");
         try {
             Ticket newTicket = ticketService.save(ticket.toEntity());
 
