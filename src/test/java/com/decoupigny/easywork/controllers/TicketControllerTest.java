@@ -23,10 +23,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doReturn;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 
@@ -57,15 +55,25 @@ class TicketControllerTest {
     }
 
     @Test
-    void createTicket() {
-        Ticket ticket = new Ticket();
+    void createTicket() throws Exception {
+/*        Ticket ticket = new Ticket();
         ticket.setTitle("Titre de test");
 
         doReturn(ticket).when(repository).save(any());
         Ticket returnedTicket = ticketService.save(ticket);
 
         Assertions.assertNotNull(returnedTicket, "The saved ticket should not be null");
-        Assertions.assertEquals("Titre de test" , returnedTicket.getTitle());
+        Assertions.assertEquals("Titre de test" , returnedTicket.getTitle());*/
+
+        String jsonString = new JSONObject()
+                .put("title", "truc")
+                .put("name", "Toyota")
+                .toString();
+
+        this.mockMvc.perform(post("/api/ticket/new")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(jsonString))
+                .andExpect(status().isCreated());
     }
 
     @Test
@@ -120,6 +128,14 @@ class TicketControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isNoContent());
+    }
+
+    @Test
+    void shouldNotDeleteNullTicket() throws Exception {
+        mockMvc.perform(delete("/api/ticket/delete/999")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isInternalServerError());
     }
 
     private void saveOneTicket(){

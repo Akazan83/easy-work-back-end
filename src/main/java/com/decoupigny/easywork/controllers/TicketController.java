@@ -6,6 +6,7 @@ import com.decoupigny.easywork.models.dto.TicketDto;
 import com.decoupigny.easywork.services.TicketService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import io.swagger.v3.oas.annotations.Operation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,7 +22,7 @@ import java.util.*;
 @RestController
 @ApiOperation(value = "Visualize and manage tickets")
 @Api(tags = "Ticket")
-@RequestMapping("/api/ticket")
+@RequestMapping("/api/ticket/v1")
 public class TicketController {
 
     private static final Logger logger = LoggerFactory.getLogger(TicketController.class);
@@ -32,6 +33,7 @@ public class TicketController {
     @Autowired
     private SimpMessagingTemplate messagingTemplate;
 
+    @Operation(summary = "Retrieve all tickets", description = "Get all tickets")
     @GetMapping("/getAll")
     public ResponseEntity<List<Ticket>> getAllTickets(@RequestParam(required = false) String title) {
         try {
@@ -52,6 +54,7 @@ public class TicketController {
         }
     }
 
+    @Operation(summary = "Get One ticket", description = "Get one ticket with unique ID.")
     @GetMapping("/getOne/{id}")
     public ResponseEntity<Ticket> getTicketById(@PathVariable("id") String id) {
         Optional<Ticket> ticketData = ticketService.findById(id);
@@ -59,9 +62,9 @@ public class TicketController {
         return ticketData.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
     }
 
+    @Operation(summary = "Create new ticket", description = "Create a new Ticket.")
     @PostMapping("/new")
     public ResponseEntity<Ticket> createTicket(@RequestBody TicketDto ticket) {
-        System.out.println("new");
         try {
             Ticket newTicket = ticketService.save(ticket.toEntity());
 
@@ -73,6 +76,7 @@ public class TicketController {
         }
     }
 
+    @Operation(summary = "Update a ticket", description = "Update a ticket with a specific ID.")
     @PutMapping("/update/{id}")
     public ResponseEntity<Ticket> updateTicket(@PathVariable("id") String id, @RequestBody TicketDto ticket, @RequestHeader("type") String updateType) {
         Optional<Ticket> ticketData = ticketService.findById(id);
@@ -95,13 +99,16 @@ public class TicketController {
         }
     }
 
+    @Operation(summary = "Delete a ticket", description = "Delete one ticket with unique ID")
     @DeleteMapping("/delete/{id}")
     public ResponseEntity<HttpStatus> deleteTicket(@PathVariable("id") String id) {
         try {
             Optional<Ticket> ticket = ticketService.findById(id);
-
+            if(ticket.isEmpty()){
+                return ResponseEntity.internalServerError().build();
+            }
             ticketService.deleteById(id);
-            assert ticket.orElse(null) != null;
+
             sendNotificationToParticipants(ticket.orElse(null),"NewTicket");
 
             return ResponseEntity.noContent().build();
@@ -110,6 +117,7 @@ public class TicketController {
         }
     }
 
+    @Operation(summary = "Delete all tickets", description = "Delete all tickets")
     @DeleteMapping("/deleteAll")
     public ResponseEntity<HttpStatus> deleteAllTickets() {
         try {
@@ -120,6 +128,7 @@ public class TicketController {
         }
     }
 
+    @Operation(summary = "Find tickets by status", description = "Find next 9 tickets based on the status")
     @GetMapping("/tickets/filtered/{status}/{page}")
     public ResponseEntity<List<Ticket>> findByStatus(@PathVariable String status, @PathVariable int page) {
         try {

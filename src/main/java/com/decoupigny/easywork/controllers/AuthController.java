@@ -13,6 +13,7 @@ import com.decoupigny.easywork.repository.UserRepository;
 import com.decoupigny.easywork.security.jwt.JwtUtils;
 import com.decoupigny.easywork.services.UserDetailsImpl;
 import io.swagger.annotations.Api;
+import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -32,7 +33,7 @@ import java.util.stream.Collectors;
 @CrossOrigin(origins = "http://localhost:4200")
 @RestController
 @Api(tags = "Authentication")
-@RequestMapping("/api/auth")
+@RequestMapping("/api/auth/v1")
 public class AuthController {
 
     private static final String ROLE_NOT_FOUND = "Error: Role is not found.";
@@ -52,6 +53,7 @@ public class AuthController {
     @Autowired
     JwtUtils jwtUtils;
 
+    @Operation(summary = "Anthenticate user", description = "Anthenticate user with a JWT.")
     @PostMapping("/signin")
     public ResponseEntity<JwtResponse> authenticateUser(@Valid @RequestBody LoginRequest loginRequest) {
 
@@ -74,6 +76,7 @@ public class AuthController {
                 roles));
     }
 
+    @Operation(summary = "Register user", description = "Register a new user.")
     @PostMapping("/signup")
     public ResponseEntity<MessageResponse> registerUser(@Valid @RequestBody SignupRequest signUpRequest) {
         if (Boolean.TRUE.equals(userRepository.existsByEmail(signUpRequest.getEmail()))) {
