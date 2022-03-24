@@ -39,7 +39,7 @@ class UserControllerTest {
     @Test
     void shouldFindUsers() throws Exception {
         createNewUser();
-        mockMvc.perform(get("/api/user/getAll")
+        mockMvc.perform(get("/api/user/v1/get-all")
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$", hasSize(1)))
@@ -48,7 +48,7 @@ class UserControllerTest {
 
     @Test
     void shouldNotFindUsers() throws Exception {
-        mockMvc.perform(get("/api/user/getAll")
+        mockMvc.perform(get("/api/user/v1/get-all")
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isNoContent());
     }

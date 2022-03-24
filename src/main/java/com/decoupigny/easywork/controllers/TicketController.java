@@ -34,15 +34,10 @@ public class TicketController {
     private SimpMessagingTemplate messagingTemplate;
 
     @Operation(summary = "Retrieve all tickets", description = "Get all tickets")
-    @GetMapping("/getAll")
-    public ResponseEntity<List<Ticket>> getAllTickets(@RequestParam(required = false) String title) {
+    @GetMapping("/get-all")
+    public ResponseEntity<List<Ticket>> getAllTickets() {
         try {
-            List<Ticket> tickets = new ArrayList<>();
-
-            if (title == null)
-                tickets.addAll(ticketService.findAll());
-            else
-                tickets.addAll(ticketService.findByTitleContaining(title));
+            List<Ticket> tickets = new ArrayList<>(ticketService.findAll());
 
             if (tickets.isEmpty()) {
                 return ResponseEntity.notFound().build();
@@ -55,7 +50,7 @@ public class TicketController {
     }
 
     @Operation(summary = "Get One ticket", description = "Get one ticket with unique ID.")
-    @GetMapping("/getOne/{id}")
+    @GetMapping("/get-one/{id}")
     public ResponseEntity<Ticket> getTicketById(@PathVariable("id") String id) {
         Optional<Ticket> ticketData = ticketService.findById(id);
 
@@ -118,7 +113,7 @@ public class TicketController {
     }
 
     @Operation(summary = "Delete all tickets", description = "Delete all tickets")
-    @DeleteMapping("/deleteAll")
+    @DeleteMapping("/delete-all")
     public ResponseEntity<HttpStatus> deleteAllTickets() {
         try {
             ticketService.deleteAll();

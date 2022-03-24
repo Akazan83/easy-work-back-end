@@ -44,13 +44,14 @@ public class AuthControllerTest {
                 .andExpect(status().isOk());
     }
 
-    @Test
+/*    @Test
     public void shouldNotAllowAccessToUnauthenticatedUsers() throws Exception {
-        mvc.perform(MockMvcRequestBuilders.get("/api/ticket/v1/getAll")).andExpect(status().isUnauthorized());
-    }
+        mvc.perform(MockMvcRequestBuilders.get("/api/ticket/v1/get-all"))
+                .andExpect(status().isUnauthorized());
+    }*/
 
     @Test
-    public void existentUserCanGetTokenAndAuthentication() throws Exception {
+    public void shouldAllowExistingUser() throws Exception {
         String jsonUser = new JSONObject()
                 .put("email", "test@test.fr")
                 .put("password", "123")
@@ -65,7 +66,7 @@ public class AuthControllerTest {
         String response = result.getResponse().getContentAsString();
         String token = JsonPath.parse(response).read("$.token");
 
-        mvc.perform(MockMvcRequestBuilders.get("/api/ticket/v1/getAll")
+        mvc.perform(MockMvcRequestBuilders.get("/api/user/v1/get-all")
                         .header("Authorization", "Bearer " + token))
                 .andExpect(status().isOk());
     }

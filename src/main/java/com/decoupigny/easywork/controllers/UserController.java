@@ -24,7 +24,7 @@ public class UserController {
     UserRepository userRepository;
 
     @Operation(summary = "Retrieve all users", description = "Get all users from database")
-    @GetMapping("/getAll")
+    @GetMapping("/get-all")
     public ResponseEntity<List<User>> getAllUsers(){
         try {
             List<User> users = new ArrayList<>();

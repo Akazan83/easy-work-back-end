@@ -48,29 +48,19 @@ class TicketControllerTest {
     private WebApplicationContext webApplicationContext;
 
     @BeforeEach()
-    public void setup()
-    {
+    public void setup() {
         mockMvc = MockMvcBuilders.webAppContextSetup(webApplicationContext).build();
         mongoTemplate.dropCollection(Ticket.class);
     }
 
     @Test
     void createTicket() throws Exception {
-/*        Ticket ticket = new Ticket();
-        ticket.setTitle("Titre de test");
-
-        doReturn(ticket).when(repository).save(any());
-        Ticket returnedTicket = ticketService.save(ticket);
-
-        Assertions.assertNotNull(returnedTicket, "The saved ticket should not be null");
-        Assertions.assertEquals("Titre de test" , returnedTicket.getTitle());*/
-
         String jsonString = new JSONObject()
                 .put("title", "truc")
                 .put("name", "Toyota")
                 .toString();
 
-        this.mockMvc.perform(post("/api/ticket/new")
+        this.mockMvc.perform(post("/api/ticket/v1/new")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(jsonString))
                 .andExpect(status().isCreated());
@@ -113,7 +103,7 @@ class TicketControllerTest {
                 .put("name", "Toyota")
                 .toString();
 
-        mockMvc.perform(put("/api/ticket/update/001")
+        mockMvc.perform(put("/api/ticket/v1/update/001")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(jsonString)
                         .header("type","test"))
@@ -124,7 +114,7 @@ class TicketControllerTest {
     void deleteTicket() throws Exception {
         saveOneTicket();
 
-        mockMvc.perform(delete("/api/ticket/delete/001")
+        mockMvc.perform(delete("/api/ticket/v1/delete/001")
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isNoContent());
@@ -132,7 +122,7 @@ class TicketControllerTest {
 
     @Test
     void shouldNotDeleteNullTicket() throws Exception {
-        mockMvc.perform(delete("/api/ticket/delete/999")
+        mockMvc.perform(delete("/api/ticket/v1/delete/999")
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isInternalServerError());

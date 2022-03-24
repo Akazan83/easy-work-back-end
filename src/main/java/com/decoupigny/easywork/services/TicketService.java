@@ -28,10 +28,6 @@ public class TicketService {
         return ticketRepository.findById(id);
     }
 
-    public List<Ticket> findByTitleContaining(String title){
-        return ticketRepository.findByTitleContaining(title);
-    }
-
     public List<Ticket> findByStatus(String status, Pageable pageable){
         return ticketRepository.findByStatus(status, pageable);
     }
