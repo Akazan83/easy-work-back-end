@@ -15,7 +15,7 @@
 	<description>Easy-Work Back-end</description>
 	<packaging>jar</packaging>
 	<properties>
-		<java.version>14</java.version>
+		<java.version>17</java.version>
 		<jacoco.version>0.8.6</jacoco.version>
 		<!-- JaCoCo Properties -->
 		<jacoco.version>0.8.6</jacoco.version>
